@@ -7,8 +7,8 @@
 echo --------------------------------------------
 echo Installing dotnet runtime version: $LT_NET_SDK_CHANNEL
 echo --------------------------------------------
-rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-prod.rpm
-yum update -y && yum install -y clang krb5-devel openssl-devel zip
+#rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-prod.rpm
+#yum update -y && yum install -y clang krb5-devel openssl-devel zip
 curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel $LT_NET_SDK_CHANNEL
 
 echo --------------------------------------------
