@@ -90,6 +90,16 @@ function RunLoadTest()
   echo Log start:$startdate end:$enddate
   echo --------------------------------------------
 
+  echo --------------------------------------------
+  echo GET ERROR METRICS $1
+  echo --------------------------------------------
+  aws cloudwatch get-metric-statistics \
+    --namespace AWS/Lambda \
+    --metric-name Errors \
+    --dimensions Name=FunctionName,Value=$LAMBDA \
+    --statistics Sum --period 43200 \
+    --start-time $startdate --end-time $enddate > ./Report/load-test-errors-$1.txt
+
   QUERY_ID=$(aws logs start-query \
     --log-group-name /aws/lambda/$LAMBDA \
     --start-time $startdate \
