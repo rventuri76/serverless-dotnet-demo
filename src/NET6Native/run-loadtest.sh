@@ -120,6 +120,18 @@ function RunLoadTest()
   echo Log start:$startdate end:$enddate
   echo --------------------------------------------
 
+  echo --------------------------------------------
+  echo GET ERROR METRICS $1
+  echo --------------------------------------------
+  aws cloudwatch get-metric-statistics \
+    --namespace AWS/Lambda \
+    --metric-name Errors \
+    --dimensions Name=FunctionName,Value=$LAMBDA_GETPRODUCTS Name=FunctionName,Value=$LAMBDA_GETPRODUCT Name=FunctionName,Value=$LAMBDA_DELETEPRODUCT Name=FunctionName,Value=$LAMBDA_PUTPRODUCT \
+    --statistics Sum --period 43200 \
+    --start-time $startdate --end-time $enddate > ./Report/load-test-errors-$1.txt
+  
+  cat ./Report/load-test-errors-$1.txt
+
   QUERY_ID=$(aws logs start-query \
     --log-group-names "/aws/lambda/$LAMBDA_GETPRODUCTS" "/aws/lambda/$LAMBDA_GETPRODUCT" "/aws/lambda/$LAMBDA_DELETEPRODUCT" "/aws/lambda/$LAMBDA_PUTPRODUCT"  \
     --start-time $startdate \
@@ -135,10 +147,12 @@ function RunLoadTest()
   echo Waiting 10 sec. for cloudwatch query to complete
   echo --------------------------------------------
   sleep 10
-
+  
   echo --------------------------------------------
   echo RESULTS $1
   echo --------------------------------------------
+
+  
   echo "${NO_COLOR}"
   date > ./Report/load-test-report-$1.txt
   echo $1 RESULTS >> ./Report/load-test-report-$1.txt
