@@ -360,7 +360,7 @@ internal class Program
         return ($"{valueNr:#,##0}");
     }
 
-    private static void SendSNSMsg(string snsTopicArn,string title,string msg)
+    private static void SendSNSMsg(string snsTopicArn,string subject,string msg)
     {
         Console.WriteLine($"SENDING SNS MSG: {snsTopicArn}");
         try
@@ -370,11 +370,11 @@ internal class Program
                 var request = new PublishRequest
                 {
                     TopicArn = snsTopicArn,
+                    Subject=subject
                     Message = msg,
                 };
 
                 var t =  snsClient.PublishAsync(request);
-                //Console.WriteLine($"SNS Message Published ID:{response.MessageId}");
                 var result=t.Result;
 
                 Console.WriteLine($"SNS Message Published ID:{result.MessageId}");
