@@ -4,6 +4,23 @@ LOG_DELETE=yes
 DELETE_STACK=yes
 ECR_URI=NotSet
 
+function SendSnsMsg()
+{
+  #Params:
+  #$1 - test type
+  #$2 - file path
+  if [ "x${LT_SNS_TOPIC_ARN}" != x ];  
+  then
+    echo --------------------------------------------
+    echo Sending message to sns topic: $LT_SNS_TOPIC_ARN
+    echo --------------------------------------------
+    subject="serverless dotnet demo  - loadtest completed - $2"
+    msg=$(<$3)
+    aws sns publish --topic-arn $LT_SNS_TOPIC_ARN --subject "$1" --message "$2"
+  fi
+}
+
+
 if [ "x${LT_TEST_DURATIOMN_SEC}" != x ];  
 then
   TEST_DURATIOMN_SEC=$LT_TEST_DURATIOMN_SEC
@@ -160,18 +177,3 @@ cd ../../loadtestcli
 dotnet run ../src $LT_SNS_TOPIC_ARN
 
 
-function SendSnsMsg()
-{
-  #Params:
-  #$1 - test type
-  #$2 - file path
-  if [ "x${LT_SNS_TOPIC_ARN}" != x ];  
-  then
-    echo --------------------------------------------
-    echo Sending message to sns topic: $LT_SNS_TOPIC_ARN
-    echo --------------------------------------------
-    subject="serverless dotnet demo  - loadtest completed - $2"
-    msg=$(<$3)
-    aws sns publish --topic-arn $LT_SNS_TOPIC_ARN --subject "$1" --message "$2"
-  fi
-}
