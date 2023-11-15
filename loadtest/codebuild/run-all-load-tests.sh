@@ -77,6 +77,10 @@ else
   cd ../../src/NET6MinimalAPI/
   source ./deploy.sh $DELETE_STACK
   source ./run-loadtest.sh $TEST_DURATIOMN_SEC $LOG_INTERVAL_MIN $LOG_DELETE $LT_SNS_TOPIC_ARN
+  SendSnsMsg "Net 6 minimal api Results","./Report/load-test-report-X86.txt"
+  SendSnsMsg "Net 6 minimal api Results","./Report/load-test-report-Arm64.txt"
+  SendSnsMsg "Net 6 minimal api Errors","./Report/load-test-errors-X86.json"
+  SendSnsMsg "Net 6 minimal api Errors","./Report/load-test-errors-Arm64.json"
 fi
 
 if [ "$LT_NET6_MINIMAL_API_WEB_ADAPTER" != yes ];  
@@ -149,5 +153,25 @@ else
   source ./run-loadtest.sh $TEST_DURATIOMN_SEC $LOG_INTERVAL_MIN $LOG_DELETE $LT_SNS_TOPIC_ARN
 fi
 
+echo --------------------------------------------
+echo GENERATING FULL REPORT
+echo --------------------------------------------
 cd ../../loadtestcli
 dotnet run ../src $LT_SNS_TOPIC_ARN
+
+
+function SendSnsMsg()
+{
+  #Params:
+  #$1 - test type
+  #$2 - file path
+  if [ "x${LT_SNS_TOPIC_ARN}" != x ];  
+  then
+    echo --------------------------------------------
+    echo Sending message to sns topic: $LT_SNS_TOPIC_ARN
+    echo --------------------------------------------
+    subject="serverless dotnet demo  - loadtest completed - $2"
+    msg=$(<$3)
+    aws sns publish --topic-arn $LT_SNS_TOPIC_ARN --subject "$1" --message "$2"
+  fi
+}
