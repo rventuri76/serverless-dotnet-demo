@@ -158,3 +158,6 @@ else
   source ./deploy.sh $DELETE_STACK
   source ./run-loadtest.sh $TEST_DURATIOMN_SEC $LOG_INTERVAL_MIN $LOG_DELETE $LT_SNS_TOPIC_ARN
 fi
+
+cd ../../loadtestcli
+dotnet run ../src $LT_SNS_TOPIC_ARN

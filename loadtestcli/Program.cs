@@ -66,14 +66,14 @@ internal class Program
         
         DisplayStartMsg();
         
-        /*
+        
         if(args.Count()<1)
         {
             DisplayHelp();
             return -1;
         }
         folderToAnalize=args[0];
-        */
+        
 
         if(args.Count()>1)
         {
@@ -88,10 +88,7 @@ internal class Program
         {
             snsTopicArn=args[3];
         }
-        
-        folderToAnalize = "./Samples";
-        snsTopicArn="arn:aws:sns:eu-west-1:409183288266:serverless-dotnet-demo-load-test";
-
+    
         try
         {
             System.Console.WriteLine($"STARTING using folder: {folderToAnalize}");

@@ -8,8 +8,6 @@ phases:
   build:
     commands:
       - ./run-all-load-tests.sh
-      - cd ../../loadtestcli
-      - dotnet run ../src
 artifacts:
   files:
     - src/NET6/Report/*
