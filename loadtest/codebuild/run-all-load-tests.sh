@@ -77,10 +77,6 @@ else
   cd ../../src/NET6MinimalAPI/
   source ./deploy.sh $DELETE_STACK
   source ./run-loadtest.sh $TEST_DURATIOMN_SEC $LOG_INTERVAL_MIN $LOG_DELETE $LT_SNS_TOPIC_ARN
-  SendSnsMsg "Net 6 minimal api Results","./Report/load-test-report-X86.txt"
-  SendSnsMsg "Net 6 minimal api Results","./Report/load-test-report-Arm64.txt"
-  SendSnsMsg "Net 6 minimal api Errors","./Report/load-test-errors-X86.json"
-  SendSnsMsg "Net 6 minimal api Errors","./Report/load-test-errors-Arm64.json"
 fi
 
 if [ "$LT_NET6_MINIMAL_API_WEB_ADAPTER" != yes ];  
@@ -131,6 +127,10 @@ else
   cd ../../src/NET8MinimalAPI/
   source ./deploy.sh $DELETE_STACK
   source ./run-loadtest.sh $TEST_DURATIOMN_SEC $LOG_INTERVAL_MIN $LOG_DELETE $LT_SNS_TOPIC_ARN
+  SendSnsMsg "Net 8 minimal api Results","./Report/load-test-report-X86.txt"
+  SendSnsMsg "Net 8 minimal api Results","./Report/load-test-report-Arm64.txt"
+  SendSnsMsg "Net 8 minimal api Errors","./Report/load-test-errors-X86.json"
+  SendSnsMsg "Net 8 minimal api Errors","./Report/load-test-errors-Arm64.json"
 fi
 
 if [ "$LT_NET8_NATIVE" != yes ];
