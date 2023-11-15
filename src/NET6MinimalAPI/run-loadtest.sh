@@ -2,9 +2,10 @@
 #$1 - load test duration in seconds
 #$2 - log interval to be used in the cloudwatch query in minutes
 #$3 - when equal to yes cloudwatch log group will be deleted to ensure that only logs of the load test will be evaluated for stat
+#$4 - ARN of sns topic to notify test results
 
 STACK_NAME=dotnet6-minimal-api
-TEST_DURATIOMN_SEC=10
+TEST_DURATIOMN_SEC=60
 LOG_INTERVAL_MIN=20
 LOG_DELETE=yes
 
@@ -26,16 +27,21 @@ then
   LOG_DELETE=$3
 fi
 
+if [ "x$4" != x ];  
+then
+  SNS_TOPIC_ARN=$4
+fi
 
 echo "${COLOR}"
 echo --------------------------------------------
 echo DURATION:$TEST_DURATIOMN_SEC
 echo LOG INTERVAL:$LOG_INTERVAL_MIN
 echo LOG_DELETE: $LOG_DELETE
+echo SNS_TOPIC_ARN: $SNS_TOPIC_ARN
 echo --------------------------------------------
 echo "${NO_COLOR}"
 
-mkdir -p Report 
+mkdir -p Report
 
 function RunLoadTest()
 {
@@ -90,7 +96,7 @@ function RunLoadTest()
   echo --------------------------------------------
   echo Log start:$startdate end:$enddate
   echo --------------------------------------------
-  
+
   echo --------------------------------------------
   echo GET ERROR METRICS $1
   echo --------------------------------------------
@@ -100,8 +106,7 @@ function RunLoadTest()
     --dimensions Name=FunctionName,Value=$LAMBDA \
     --statistics Sum --period 43200 \
     --start-time $startdate --end-time $enddate > ./Report/load-test-errors-$1.json
-  
-  cat ./Report/load-test-errors-$1.json
+
   QUERY_ID=$(aws logs start-query \
     --log-group-name /aws/lambda/$LAMBDA \
     --start-time $startdate \
@@ -129,6 +134,16 @@ function RunLoadTest()
   aws logs get-query-results --query-id $QUERY_ID --output text >> ./Report/load-test-report-$1.txt
   cat ./Report/load-test-report-$1.txt
   aws logs get-query-results --query-id $QUERY_ID --output json >> ./Report/load-test-report-$1.json
+  
+  if [ "x$SNS_TOPIC_ARN" != x ];  
+  then
+    echo --------------------------------------------
+    echo Sending message to sns topic: $SNS_TOPIC_ARN
+    echo --------------------------------------------
+    msg=$(<./Report/load-test-report-$1.txt)\n\n$(<./Report/load-test-errors-$1.json)
+    subject="serverless dotnet demo load test result for $LAMBDA"
+    aws sns publish --topic-arn $SNS_TOPIC_ARN --subject "$subject" --message "$msg"
+  fi
 }
 
 RunLoadTest x86 ApiUrlX86 LambdaX86Name

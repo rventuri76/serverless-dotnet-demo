@@ -2,6 +2,7 @@
 #$1 - load test duration in seconds
 #$2 - log interval to be used in the cloudwatch query in minutes
 #$3 - when equal to yes cloudwatch log group will be deleted to ensure that only logs of the load test will be evaluated for stat
+#$4 - ARN of sns topic to notify test results
 
 STACK_NAME=dotnet8-minimal-api
 TEST_DURATIOMN_SEC=60
@@ -24,6 +25,11 @@ fi
 if [ "x$3" != x ];  
 then
   LOG_DELETE=$3
+fi
+
+if [ "x$4" != x ];  
+then
+  SNS_TOPIC_ARN=$4
 fi
 
 echo "${COLOR}"
@@ -76,8 +82,8 @@ function RunLoadTest()
   artillery run \
     --overrides '{"config": { "phases": [{ "duration": '$TEST_DURATIOMN_SEC', "arrivalRate": 100 }] } }'  \
     --quiet \
-    ../../loadtest/load-test.yml 
-
+    ../../loadtest/codebuild/load-test.yml 
+  
   echo "${COLOR}"
   echo --------------------------------------------
   echo Waiting 10 sec. for logs to consolidate
@@ -128,6 +134,16 @@ function RunLoadTest()
   aws logs get-query-results --query-id $QUERY_ID --output text >> ./Report/load-test-report-$1.txt
   cat ./Report/load-test-report-$1.txt
   aws logs get-query-results --query-id $QUERY_ID --output json >> ./Report/load-test-report-$1.json
+  
+  if [ "x$SNS_TOPIC_ARN" != x ];  
+  then
+    echo --------------------------------------------
+    echo Sending message to sns topic: $SNS_TOPIC_ARN
+    echo --------------------------------------------
+    msg=$(<./Report/load-test-report-$1.txt)\n\n$(<./Report/load-test-errors-$1.json)
+    subject="serverless dotnet demo load test result for $LAMBDA"
+    aws sns publish --topic-arn $SNS_TOPIC_ARN --subject "$subject" --message "$msg"
+  fi
 }
 
 RunLoadTest x86 ApiUrlX86 LambdaX86Name
