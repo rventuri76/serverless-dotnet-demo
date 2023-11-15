@@ -1,7 +1,7 @@
 #Arguments:
 #$1 - load test duration in seconds
 #$2 - log interval to be used in the cloudwatch query in minutes
-#$3 - when equal to 1 cloudwatch log group will be deleted to ensure that only logs of the load test will be evaluated for stat
+#$3 - when equal to yes cloudwatch log group will be deleted to ensure that only logs of the load test will be evaluated for stat
 #$4 - ARN of sns topic to notify test results
 
 STACK_NAME=dotnet8-native-minimal-api
@@ -105,7 +105,7 @@ function RunLoadTest()
     --metric-name Errors \
     --dimensions Name=FunctionName,Value=$LAMBDA \
     --statistics Sum --period 43200 \
-    --start-time $startdate --end-time $enddate > ./Report/load-test-errors-$1.txt
+    --start-time $startdate --end-time $enddate > ./Report/load-test-errors-$1.json
 
   QUERY_ID=$(aws logs start-query \
     --log-group-name /aws/lambda/$LAMBDA \
