@@ -172,7 +172,7 @@ function RunLoadTest()
     echo Sending message to sns topic: $SNS_TOPIC_ARN
     echo --------------------------------------------
     msg=$(<./Report/load-test-report-$1.txt)\n\n$(<./Report/load-test-errors-$1.txt)
-    subject="serverless dotnet demo load test result for $LAMBDA"
+    subject="serverless dotnet demo load test result for $LAMBDA_GETPRODUCTS"
     aws sns publish --topic-arn $SNS_TOPIC_ARN --subject "$subject" --message "$msg"
   fi
 }
