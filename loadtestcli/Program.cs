@@ -75,18 +75,18 @@ internal class Program
         folderToAnalize=args[0];
         
 
-        if(args.Count()>1)
+        if(args.Count()>=2)
         {
-            reportFileOutputPath=args[2];
+            reportFileOutputPath=args[1];
         }
         else
         {
             reportFileOutputPath=$"./Report/{DateTime.UtcNow:yyyy-MM-dd-hh-mm}-loadtest-report.html";
         }
 
-        if(args.Count()>2)
+        if(args.Count()>=3)
         {
-            snsTopicArn=args[3];
+            snsTopicArn=args[2];
         }
     
         try

@@ -89,16 +89,6 @@ else
   source ./run-loadtest.sh $TEST_DURATIOMN_SEC $LOG_INTERVAL_MIN $LOG_DELETE $LT_SNS_TOPIC_ARN
 fi
 
-if [ "$LT_NET6_NATIVE" != yes ];  
-then
-  echo SKIPPING net6 native - LT_NET6_NATIVE = $LT_NET6_NATIVE
-else
-  echo "RUNNING load test for net6 native"
-  cd ../../src/NET6Native/
-  source ./deploy.sh $DELETE_STACK
-  source ./run-loadtest.sh $TEST_DURATIOMN_SEC $LOG_INTERVAL_MIN $LOG_DELETE $LT_SNS_TOPIC_ARN
-fi
-
 if [ "$LT_NET6_TOPLEVEL" != yes ];  
 then
   echo SKIPPING net6 top level - LT_NET6_TOPLEVEL = $LT_NET6_TOPLEVEL
