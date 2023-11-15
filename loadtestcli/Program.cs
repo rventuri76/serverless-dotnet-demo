@@ -66,27 +66,25 @@ internal class Program
         
         DisplayStartMsg();
         
-        
         if(args.Count()<1)
         {
             DisplayHelp();
             return -1;
         }
         folderToAnalize=args[0];
-        
 
         if(args.Count()>=2)
         {
-            reportFileOutputPath=args[1];
+            snsTopicArn=args[1];
+        }
+
+         if(args.Count()>=3)
+        {
+            reportFileOutputPath=args[2];
         }
         else
         {
             reportFileOutputPath=$"./Report/{DateTime.UtcNow:yyyy-MM-dd-hh-mm}-loadtest-report.html";
-        }
-
-        if(args.Count()>=3)
-        {
-            snsTopicArn=args[2];
         }
     
         try
@@ -335,12 +333,12 @@ internal class Program
 
         if(ret.WarmStart==null)
         {
-            System.Console.WriteLine("    !!!!  ATTENTION MISING WARM STATS   !!!!");
+            System.Console.WriteLine("    !!!! ATTENTION MISING WARM STATS !!!!");
         }
 
         if(ret.ColdStart==null)
         {
-            System.Console.WriteLine("    !!!! ATTENTION MISING COLD STATS    !!!!");
+            System.Console.WriteLine("    !!!! ATTENTION MISING COLD STATS !!!!");
         }
 
         return ret;
